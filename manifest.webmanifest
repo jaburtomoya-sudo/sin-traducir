@@ -1,0 +1,26 @@
+{
+ "name": "Sin Traducir",
+ "short_name": "Sin Traducir",
+ "description": "Inglés desde cero sin traducir en la cabeza.",
+ "lang": "es",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#edf2ef",
+ "theme_color": "#0e6b63",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any maskable"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  }
+ ]
+}
