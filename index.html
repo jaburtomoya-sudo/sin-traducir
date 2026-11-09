@@ -229,38 +229,49 @@ function play(key, opts = {}) {
 
 /* ---------- Micrófono: escucha y compara palabra por palabra ---------- */
 const CONTR = { "i'm": "i am", "it's": "it is", "there's": "there is", "what's": "what is", "don't": "do not", "let's": "let us", "you're": "you are", "that's": "that is" };
-const NUMS = { "20": "twenty", "2": "two", "4": "four", "ok": "okay" };
+const ONES = ["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+const TENS = { 2: "twenty", 3: "thirty", 4: "forty", 5: "fifty", 6: "sixty", 7: "seventy", 8: "eighty", 9: "ninety" };
+function numWord(w) {
+  if (w === "ok") return "okay";
+  if (!/^\d{1,3}$/.test(w)) return w;
+  const n = +w;
+  if (n < 20) return ONES[n];
+  if (n < 100) return TENS[Math.floor(n / 10)] + (n % 10 ? " " + ONES[n % 10] : "");
+  return w;
+}
 function words(s) {
-  return s.toLowerCase().replace(/[’`]/g, "'").replace(/[^a-z0-9' ]+/g, " ").split(/\s+/).filter(Boolean).map(w => NUMS[w] || w);
+  return s.toLowerCase().replace(/[’`]/g, "'").replace(/[^a-z0-9' ]+/g, " ").split(/\s+/).filter(Boolean).flatMap(w => numWord(w).split(" "));
 }
 function expand(ws) { return ws.flatMap(w => (CONTR[w] || w).split(" ")); }
-function lev(a, b) {
-  const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
-  let prev = Array.from({ length: n + 1 }, (_, j) => j);
-  for (let i = 1; i <= m; i++) { const cur = [i]; for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; }
-  return prev[n];
-}
-const close = (a, b) => a === b || (a.length >= 4 && lev(a, b) <= 1) || (a.length >= 7 && lev(a, b) <= 2);
+/* MODO ESTRICTO: cada palabra debe coincidir EXACTA y en orden. */
 function score(target, heard, itemId) {
   const raw = target.split(/\s+/).filter(Boolean);
-  const hRaw = words(heard), hExp = expand(hRaw);
-  let okCount = 0;
+  const hExp = expand(words(heard));
+  let ptr = 0, okCount = 0, used = 0;
   const marks = raw.map((tok, k) => {
-    const w = words(tok); if (!w.length) return { tok, ok: true };
+    const tw = expand(words(tok)); if (!tw.length) return { tok, ok: true, skip: true };
     const isName = itemId === "my-name" && k === raw.length - 1;
-    const ok = isName ? hExp.length >= 4 : (w.every(x => hRaw.some(y => close(x, y))) || expand(w).every(x => hExp.some(y => close(x, y))));
-    if (ok) okCount++;
+    if (isName) { const ok = hExp.length - ptr >= 1; if (ok) { okCount++; used++; ptr = hExp.length; } return { tok, ok }; }
+    let p = ptr, ok = true;
+    for (const x of tw) { const i = hExp.indexOf(x, p); if (i < 0) { ok = false; break; } p = i + 1; }
+    if (ok) { ptr = p; okCount++; used += tw.length; }
     return { tok, ok };
   });
-  const counted = marks.filter(m => words(m.tok).length).length || 1;
-  return { ratio: okCount / counted, marks };
+  const counted = marks.filter(m => !m.skip).length || 1;
+  return { ratio: okCount / counted, marks, extra: Math.max(0, hExp.length - used) };
 }
 function bestScore(target, alts, itemId) {
-  let best = { ratio: 0, marks: target.split(/\s+/).map(tok => ({ tok, ok: false })), heard: "" };
-  for (const a of alts) { const s = score(target, a, itemId); if (s.ratio > best.ratio) best = { ...s, heard: a }; }
+  let best = { ratio: -1, marks: target.split(/\s+/).map(tok => ({ tok, ok: false })), heard: "", extra: 0 };
+  alts.forEach((a, i) => {
+    const s = score(target, a, itemId);
+    if (i > 0) s.ratio = Math.min(s.ratio, 0.9); // solo la 1ª opción del reconocedor cuenta como perfecta
+    if (s.ratio > best.ratio) best = { ...s, heard: a };
+  });
+  if (best.ratio < 0) best.ratio = 0;
   if (!best.heard && alts[0]) best.heard = alts[0];
   return best;
 }
+const gradeOf = s => (s.ratio === 1 && s.extra <= 2) ? "good" : s.ratio >= 0.6 ? "mid" : "bad";
 let micDenied = false;
 function listen() {
   return new Promise(resolve => {
@@ -440,6 +451,9 @@ function renderIntro(st) {
   const it = BY_ID[st.id], target = fill(it.en);
   const result = h("div", { style: "display:grid;gap:8px;justify-items:center" });
   const mainWords = h("div", {}, h("div", { class: "answer" }, target));
+  let tries = 0;
+  const nextBtn = h("button", { class: "btn btn-main", onclick: next }, "Siguiente", icon("arrow"));
+  if (SR && !micDenied) nextBtn.hidden = true;
   app.append(h("section", { class: "stage" },
     h("div", { class: "kind" }, h("span", { class: "label" }, "Frase nueva"), h("span", { class: "chip" }, "Escucha · haz el gesto · dila")),
     h("div", { class: "big-pic", "aria-hidden": "true" }, it.pic),
@@ -451,15 +465,19 @@ function renderIntro(st) {
       h("button", { class: "btn btn-ghost", onclick: () => play(it.id, { slow: true }) }, icon("slow"), "Lento"),
       SR ? micButton("Dila con el micrófono", alts => {
         if (!alts) return;
-        const s = bestScore(target, alts, it.id);
+        const s = bestScore(target, alts, it.id), g = gradeOf(s);
+        tries++;
         mainWords.replaceChildren(wordsView(s.marks));
+        nextBtn.hidden = !(g === "good" || tries >= 3);
+        nextBtn.textContent = g === "good" ? "Siguiente" : "Seguir igual";
+        nextBtn.append(icon("arrow"));
         result.replaceChildren(
-          h("p", { class: "verdict " + (s.ratio >= 0.85 ? "ok" : s.ratio >= 0.5 ? "mid" : "no") }, s.ratio >= 0.85 ? "¡Se entendió perfecto!" : s.ratio >= 0.5 ? "Casi: practica las palabras en rojo." : alts.length ? "No se entendió todavía. Escucha y prueba otra vez." : "No te escuché. Habla un poco más fuerte."),
+          h("p", { class: "verdict " + (g === "good" ? "ok" : g === "mid" ? "mid" : "no") }, g === "good" ? "¡Perfecto! Se entendió cada palabra." : g === "mid" ? "Casi. Escucha otra vez y repítela: las palabras en rojo no se entendieron." : alts.length ? "Todavía no se entiende. Escucha despacio y prueba otra vez." : "No te escuché. Habla un poco más fuerte."),
           s.heard ? h("p", { class: "heard" }, "Te entendí: “" + s.heard + "”") : null);
       }) : null),
     result,
     peekEs(fill(it.es), "¿Qué significa?"),
-    h("button", { class: "btn btn-main", onclick: next }, "Siguiente", icon("arrow"))));
+    nextBtn));
   play(it.id);
 }
 
@@ -485,12 +503,12 @@ function renderRecall(st) {
     if (alts) {
       const s = bestScore(target, alts, it.id);
       wordsBox.replaceChildren(wordsView(s.marks));
-      suggestion = s.ratio >= 0.85 ? "good" : s.ratio >= 0.5 ? "mid" : "bad";
+      suggestion = gradeOf(s);
       info.replaceChildren(
-        h("p", { class: "verdict " + (suggestion === "good" ? "ok" : suggestion === "mid" ? "mid" : "no") }, suggestion === "good" ? "¡Se entendió perfecto!" : suggestion === "mid" ? "Casi: mira las palabras en rojo." : alts.length ? "Todavía no se entiende. Escucha cómo es." : "No te escuché."),
+        h("p", { class: "verdict " + (suggestion === "good" ? "ok" : suggestion === "mid" ? "mid" : "no") }, suggestion === "good" ? "¡Se entendió perfecto!" : suggestion === "mid" ? "Casi. Las palabras en rojo no se entendieron: escucha y repítela." : alts.length ? "Todavía no se entiende. Escucha cómo es." : "No te escuché."),
         s.heard ? h("p", { class: "heard" }, "Te entendí: “" + s.heard + "”") : null);
     } else { wordsBox.replaceChildren(h("div", { class: "answer" }, target)); info.replaceChildren(); suggestion = null; }
-    rateRow.querySelectorAll("button").forEach(b => b.classList.toggle("suggest", b.dataset.g === suggestion));
+    rateRow.querySelectorAll("button").forEach(b => { b.classList.toggle("suggest", b.dataset.g === suggestion); if (b.dataset.g === "good") b.hidden = !!alts && suggestion !== "good"; });
     setTimeout(() => play(it.id), 350);
   }
   async function tryMic(btn) {
@@ -549,7 +567,7 @@ function renderConvo(st) {
     result.replaceChildren();
     let best = { ratio: 0 }, bestId = null;
     for (const id of answers) { const s = bestScore(fill(BY_ID[id].en), alts, id); if (s.ratio > best.ratio) { best = s; bestId = id; } }
-    if (best.ratio >= 0.7) {
+    if (gradeOf(best) !== "bad") {
       result.append(h("p", { class: "verdict ok" }, "¡Bien respondido!"), wordsView(best.marks), best.heard ? h("p", { class: "heard" }, "Te entendí: “" + best.heard + "”") : null);
       if (bestId && P.items[bestId]) { P.items[bestId].seen = (P.items[bestId].seen || 0) + 1; save(); }
     } else {
