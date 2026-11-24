@@ -437,7 +437,7 @@ function render() {
   app.replaceChildren();
   document.querySelector(".toast")?.remove();
   document.body.classList.toggle("in-session", !!S);
-  if (!S) { renderHome(); window.scrollTo({ top: 0 }); return; }
+  if (!S) { if (window.__swPending) setTimeout(window.__swPending, 0); renderHome(); window.scrollTo({ top: 0 }); return; }
   const st = S.steps[S.i];
   const done = st.t === "done";
   app.append(header(done ? null : h("div", { class: "row" }, h("span", { class: "chip" }, "⏱ " + minutes() + " de " + TARGET_MIN + " min"), h("button", { class: "btn btn-ghost btn-small", onclick: () => { stopAudio(); S = null; render(); } }, "Salir"))));
@@ -768,7 +768,18 @@ function renderDone() {
 
 load();
 render();
-if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+/* Actualización: busca versión nueva al abrir y al volver a la app; si llega una, recarga (solo fuera de una sesión). */
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false, pending = false;
+  const reloadNow = () => { if (reloaded) return; if (S) { pending = true; return; } reloaded = true; location.reload(); };
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if (hadController) reloadNow(); });
+  navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(reg => {
+    reg.update().catch(() => {});
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") { reg.update().catch(() => {}); if (pending && !S) reloadNow(); } });
+  }).catch(() => {});
+  window.__swPending = () => pending && !S && reloadNow();
+}
 })();
 </script>
 </body>
