@@ -68,6 +68,11 @@ button:disabled { cursor: default; }
 .lesson .num { font-family: var(--display); font-weight: 800; font-size: 22px; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--card); border: 2px solid var(--line); }
 .lesson.now .num { background: var(--sun); color: var(--sun-ink); border-color: var(--sun); }
 .lesson.locked { opacity: 0.55; }
+button.lesson { width: 100%; text-align: left; border: 2px solid transparent; }
+button.lesson:hover { border-color: var(--line); }
+.lesson-end { display: grid; justify-items: end; gap: 2px; }
+.lesson .go { display: inline-flex; align-items: center; gap: 4px; color: var(--teal); font-weight: 700; font-size: 15px; }
+.lesson .go svg { width: 18px; height: 18px; }
 .meter { height: 8px; background: var(--card); border-radius: 999px; overflow: hidden; margin-top: 6px; border: 1px solid var(--line); }
 .meter i { display: block; height: 100%; background: var(--teal); }
 .lesson small { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
@@ -407,6 +412,24 @@ function buildSession() {
   steps.push({ t: "done" });
   return { steps, i: 0, newIds, retried: new Set(), t0: Date.now(), extra: 0 };
 }
+/* Repasar una lección ya empezada: todas sus frases, oído y una conversación de esa lección. */
+function buildLessonSession(li) {
+  const its = ITEMS.filter(i => i.lesson === li);
+  const newIds = its.filter(i => !known(i.id)).map(i => i.id);
+  const steps = [];
+  newIds.forEach(id => steps.push({ t: "intro", id }));
+  shuffle(its.map(i => i.id)).forEach(id => steps.push({ t: "recall", id, fresh: newIds.includes(id) }));
+  const lessonIds = its.map(i => i.id);
+  const pool = [...new Set([...ITEMS.filter(i => known(i.id)).map(i => i.id), ...newIds])];
+  const listenFrom = lessonIds.length >= 4 ? lessonIds : pool;
+  if (pool.length >= 4) for (let k = 0; k < 4; k++) steps.push({ t: "listen", id: listenFrom[Math.floor(Math.random() * listenFrom.length)], pool });
+  let turns = CONVOS.filter(c => c.lesson === li && c.answers.some(a => pool.includes(a))).sort((a, b) => /bye/.test(a.id) - /bye/.test(b.id));
+  if (turns.length > 4) turns = [...turns.slice(0, 3), turns[turns.length - 1]];
+  if (turns.length >= 2) steps.push({ t: "dialog", turns, pool });
+  else turns.forEach(c => steps.push({ t: "convo", c, pool }));
+  steps.push({ t: "done" });
+  return { steps, i: 0, newIds, retried: new Set(), t0: Date.now(), extra: 0, lesson: li };
+}
 function next() { stopAudio(); S.i++; render(); }
 function requeue(id) {
   if (S.retried.has(id)) return; S.retried.add(id);
@@ -440,7 +463,7 @@ function render() {
   if (!S) { if (window.__swPending) setTimeout(window.__swPending, 0); renderHome(); window.scrollTo({ top: 0 }); return; }
   const st = S.steps[S.i];
   const done = st.t === "done";
-  app.append(header(done ? null : h("div", { class: "row" }, h("span", { class: "chip" }, "⏱ " + minutes() + " de " + TARGET_MIN + " min"), h("button", { class: "btn btn-ghost btn-small", onclick: () => { stopAudio(); S = null; render(); } }, "Salir"))));
+  app.append(header(done ? null : h("div", { class: "row" }, h("span", { class: "chip" }, S.lesson != null ? "Lección " + (S.lesson + 1) : "⏱ " + minutes() + " de " + TARGET_MIN + " min"), h("button", { class: "btn btn-ghost btn-small", onclick: () => { stopAudio(); S = null; render(); } }, "Salir"))));
   if (!done) app.append(h("div", { class: "bar", role: "progressbar", "aria-valuemin": 0, "aria-valuemax": S.steps.length - 1, "aria-valuenow": S.i }, h("i", { style: "width:" + Math.round(100 * S.i / (S.steps.length - 1)) + "%" })));
   ({ intro: renderIntro, recall: renderRecall, listen: renderListen, convo: renderConvo, dialog: renderDialog, done: renderDone })[st.t](st);
   window.scrollTo({ top: 0 });
@@ -470,13 +493,16 @@ function renderHome() {
     installEvt ? h("button", { class: "btn btn-sun", onclick: async () => { installEvt.prompt(); try { await installEvt.userChoice; } catch {} installEvt = null; render(); } }, "Instalar la app en la tablet") : null,
     !SR ? h("p", { class: "alert" }, "Este navegador no reconoce voz. Abre la app en Chrome para que te escuche.") : null));
 
-  app.append(h("section", { class: "panel" }, h("h2", {}, "Lecciones"),
+  app.append(h("section", { class: "panel" }, h("div", {}, h("h2", {}, "Lecciones"), h("p", { class: "note" }, "Toca una lección que ya empezaste para practicarla otra vez.")),
     h("div", { class: "lessons" }, LESSONS.map((L, li) => {
       const its = ITEMS.filter(i => i.lesson === li), seen = its.filter(i => known(i.id)).length, firm = its.filter(i => known(i.id) && P.items[i.id].box >= 2).length;
-      return h("div", { class: "lesson" + (li === curLesson ? " now" : "") + (li > curLesson ? " locked" : "") },
+      const open = li <= curLesson && seen > 0;
+      return h(open ? "button" : "div", { class: "lesson" + (li === curLesson ? " now" : "") + (li > curLesson ? " locked" : "") + (open ? " open" : ""),
+          onclick: open ? () => { S = buildLessonSession(li); render(); } : null, "aria-label": open ? "Practicar la lección " + (li + 1) + ": " + L.title : null },
         h("span", { class: "num" }, li + 1),
         h("div", {}, h("h3", {}, L.title), h("div", { class: "meter", "aria-hidden": "true" }, h("i", { style: "width:" + Math.round(100 * firm / its.length) + "%" }))),
-        h("small", {}, seen ? firm + "/" + its.length + " firmes" : li > curLesson ? "Nivel " + L.level : "Empieza hoy"));
+        h("span", { class: "lesson-end" }, h("small", {}, seen ? firm + "/" + its.length + " firmes" : li > curLesson ? "Nivel " + L.level : "Empieza hoy"),
+          open ? h("span", { class: "go" }, "Practicar", icon("arrow")) : null));
     }))));
 
   app.append(h("div", { class: "home-top" }, ...app.querySelectorAll(":scope > section.panel")));
@@ -740,7 +766,7 @@ function renderDialog(st) {
 
 function renderDone() {
   const mins = minutes();
-  if (mins < TARGET_MIN - 2 && S.extra < 3 && ITEMS.some(i => known(i.id))) {
+  if (S.lesson == null && mins < TARGET_MIN - 2 && S.extra < 3 && ITEMS.some(i => known(i.id))) {
     app.append(h("section", { class: "stage" },
       h("div", { class: "big-pic", "aria-hidden": "true" }, "⏱"),
       h("h1", {}, "Llevas " + mins + " de " + TARGET_MIN + " minutos"),
