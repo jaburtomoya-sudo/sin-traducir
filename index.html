@@ -113,23 +113,75 @@ details.box ul { margin: 12px 0 0; padding-left: 20px; display: grid; gap: 8px; 
 .choice { background: var(--paper); border: 3px solid var(--line); border-radius: 18px; font-size: clamp(54px, 12vw, 88px); line-height: 1; padding: 18px 8px; }
 .choice.ok { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, var(--card)); }
 .choice.no { border-color: var(--bad); opacity: 0.6; }
-.story { display: grid; gap: 10px; width: 100%; max-width: 640px; }
 .line { display: flex; align-items: center; gap: 14px; background: var(--paper); border-radius: 14px; padding: 10px 14px; text-align: left; border: 2px solid transparent; }
 .line .pic { font-size: 40px; line-height: 1; flex: none; }
 .line .en { font-weight: 700; font-size: 20px; min-width: 0; overflow-wrap: anywhere; }
-.line.now { border-color: var(--sun); }
-.story.pics-only { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
-.story.pics-only .line { flex-direction: column; justify-content: center; }
-.story.pics-only .line .pic { font-size: 54px; }
-.timer { width: 100%; max-width: 640px; height: 16px; border-radius: 999px; background: var(--paper); overflow: hidden; border: 1px solid var(--line); }
-.timer > i { display: block; height: 100%; width: 100%; background: var(--sun); transform-origin: left; }
-.secs { font-family: var(--display); font-weight: 800; font-size: 44px; font-variant-numeric: tabular-nums; }
 .bubble { background: var(--teal-soft); border-radius: 22px 22px 22px 6px; padding: 18px 22px; font-size: 20px; max-width: 32ch; display: grid; gap: 8px; justify-items: center; }
 .bubble .who { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
 .feedback { font-weight: 700; font-size: 20px; min-height: 30px; }
 .feedback.ok { color: var(--good); } .feedback.no { color: var(--bad); }
 .toast { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); max-width: 640px; margin: 0 auto; background: var(--card); border: 2px solid var(--sun); border-radius: 18px; padding: 16px 18px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.18); display: grid; gap: 10px; z-index: 20; font-size: 16px; }
 .saved { font-size: 13px; color: var(--muted); text-align: center; }
+
+/* ---------- Pantalla completa en celular, tablet y PC ---------- */
+.wrap { max-width: 1200px; }
+.home-top { display: grid; gap: 20px; align-items: start; }
+@media (min-width: 1000px) { .home-top { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+body.in-session .wrap { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; gap: 12px; max-width: 1100px; }
+body.in-session .stage { flex: 1; display: flex; flex-direction: column; align-items: center; }
+body.in-session .stage > * { flex: none; }
+body.in-session .stage > .kind { align-self: stretch; }
+body.in-session .stage > .kind + * { margin-top: auto; }
+body.in-session .stage > :last-child { margin-bottom: auto; }
+.stage { gap: clamp(12px, 2.2vh, 20px); padding: clamp(16px, 3vmin, 40px); }
+.side { display: grid; gap: clamp(12px, 2.2vh, 20px); justify-items: center; width: 100%; }
+.big-pic { font-size: clamp(72px, min(22vw, 20vh), 180px); }
+.answer { font-size: clamp(28px, min(7vw, 7vh), 56px); }
+.choice { font-size: clamp(48px, min(12vw, 10vh), 120px); padding: clamp(10px, 2vh, 18px) 8px; }
+.choices { max-width: min(720px, 60vh); }
+header.top { flex-wrap: nowrap; }
+header.top > .row { flex-wrap: nowrap; }
+@media (max-width: 520px) {
+  body { font-size: 17px; }
+  .wrap { gap: 14px; }
+  .brand { font-size: 22px; }
+  header.top .chip { padding: 4px 10px; white-space: nowrap; }
+  .btn { min-height: 54px; padding: 0 18px; font-size: 18px; }
+  .stage { border-radius: 20px; }
+  .stage .kind .chip { display: none; }
+  .stage .row.center { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 10px; }
+  .stage .row.center > .btn-sun:only-child, .stage .row.center > .btn-sun:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .stage .row.center > .btn { padding: 0 12px; }
+  .side > .btn-main, .stage > .btn-main { width: 100%; }
+  .gesture { font-size: 16px; padding: 10px 14px; }
+  .panel { padding: 18px; }
+}
+.chat { display: grid; gap: 10px; width: 100%; max-width: 680px; max-height: 38vh; overflow-y: auto; padding: 4px; }
+.msg { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 20px; max-width: 92%; text-align: left; }
+.msg.her { background: var(--teal-soft); justify-self: start; border-bottom-left-radius: 6px; }
+.msg.me { background: var(--paper); border: 2px solid var(--line); justify-self: end; border-bottom-right-radius: 6px; }
+.msg .pic { font-size: 32px; line-height: 1; flex: none; }
+.msg .said, .msg .en { font-weight: 700; font-size: 19px; overflow-wrap: anywhere; }
+.msg .answer { font-size: 22px; justify-content: flex-start; }
+.msg .btn-small { min-height: 44px; padding: 0 12px; flex: none; }
+/* Pantallas grandes (tablet, PC): letra y botones un poco más grandes. */
+@media (min-width: 760px) and (min-height: 700px) {
+  body { font-size: 20px; }
+  .btn { min-height: 64px; font-size: 20px; }
+  .btn-small { min-height: 50px; font-size: 17px; }
+  .cue, .gesture { font-size: 20px; }
+  .msg .said, .msg .en { font-size: 21px; }
+}
+/* Pantalla ancha y baja (tablet acostada, PC): imagen a la izquierda, acciones a la derecha. */
+@media (min-width: 760px) and (min-aspect-ratio: 5/4) {
+  body.in-session .stage.split { display: grid; grid-template-rows: auto 1fr; }
+  body.in-session .stage.split > * { margin: 0; }
+  .stage.split { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); column-gap: clamp(20px, 4vw, 48px); align-items: center; }
+  .stage.split > .kind { grid-column: 1 / -1; }
+  .stage.split > .big-pic, .stage.split > .bubble { grid-column: 1; justify-self: center; }
+  .stage.split > .side { grid-column: 2; }
+  .stage.split > .big-pic { font-size: clamp(120px, min(22vw, 38vh), 260px); }
+}
 @media (max-width: 520px) { .rate button { font-size: 15px; min-height: 64px; } .stat b { font-size: 26px; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -143,12 +195,10 @@ details.box ul { margin: 12px 0 0; padding-left: 20px; display: grid; gap: 8px; 
 const LESSONS = JSON.parse(document.getElementById("content").textContent);
 const ITEMS = LESSONS.flatMap((L, li) => L.items.map(i => ({ ...i, lesson: li })));
 const BY_ID = Object.fromEntries(ITEMS.map(i => [i.id, i]));
-const STORIES = LESSONS.flatMap((L, li) => L.stories.map((lines, k) => ({ id: L.id + "-" + k, lines, lesson: li })));
 const CONVOS = LESSONS.flatMap((L, li) => L.convos.map(c => ({ ...c, lesson: li })));
 const INTERVALS = [0, 1, 3, 7, 16, 35, 80];
 const NEW_PER_SESSION = 5;
 const TARGET_MIN = 20;
-const storySeconds = lvl => lvl >= 3 ? [30, 20, 12] : [35, 25, 15];
 const levelOf = id => (LESSONS[BY_ID[id].lesson] || {}).level || 1;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -170,7 +220,6 @@ const fill = s => s.replace(/\{name\}/g, P.name || "Jonathan");
 const known = id => !!P.items[id];
 const dueIds = () => ITEMS.filter(i => known(i.id) && P.items[i.id].due <= dayNum()).map(i => i.id);
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const wait = ms => new Promise(r => setTimeout(r, ms));
 
 function h(tag, attrs = {}, ...kids) {
   const el = document.createElement(tag);
@@ -319,17 +368,22 @@ function buildSession() {
   shuffle(newIds.slice()).forEach(id => steps.push({ t: "recall", id, fresh: true }));
   const pool = [...new Set([...ITEMS.filter(i => known(i.id)).map(i => i.id), ...newIds])];
   if (pool.length >= 4) for (let k = 0; k < 6; k++) steps.push({ t: "listen", id: pool[Math.floor(Math.random() * pool.length)], pool });
-  const convos = shuffle(CONVOS.filter(c => c.answers.some(a => pool.includes(a)))).sort((a, b) => b.lesson - a.lesson).slice(0, 3);
-  shuffle(convos).forEach(c => steps.push({ t: "convo", c, pool }));
-  const story = [...STORIES].reverse().find(st => st.lines.every(id => pool.includes(id)) && st.lines.some(id => newIds.includes(id))) || [...STORIES].reverse().find(st => st.lines.every(id => pool.includes(id)));
-  if (story) { steps.push({ t: "story", story, round: 0 }); storySeconds(LESSONS[story.lesson].level).forEach((s, r) => steps.push({ t: "story", story, round: r + 1, secs: s })); }
+  const usable = CONVOS.filter(c => c.answers.some(a => pool.includes(a)));
+  /* Conversación final: 3 o 4 turnos de la lección más reciente que alcance, en el orden de la lección y con la despedida al final. */
+  const byLesson = li => usable.filter(c => c.lesson === li).sort((a, b) => /bye/.test(a.id) - /bye/.test(b.id));
+  const lastLesson = [...new Set(usable.map(c => c.lesson))].sort((a, b) => b - a).find(li => byLesson(li).length >= 3);
+  let turns = lastLesson == null ? [] : byLesson(lastLesson);
+  if (turns.length > 4) turns = [...turns.slice(0, 3), turns[turns.length - 1]];
+  const singles = shuffle(usable.filter(c => !turns.includes(c))).slice(0, 2);
+  singles.forEach(c => steps.push({ t: "convo", c, pool }));
+  if (turns.length >= 2) steps.push({ t: "dialog", turns, pool });
   steps.push({ t: "done" });
   return { steps, i: 0, newIds, retried: new Set(), t0: Date.now(), extra: 0 };
 }
 function next() { stopAudio(); S.i++; render(); }
 function requeue(id) {
   if (S.retried.has(id)) return; S.retried.add(id);
-  const at = S.steps.findIndex((st, k) => k > S.i && ["listen", "convo", "story", "done"].includes(st.t));
+  const at = S.steps.findIndex((st, k) => k > S.i && ["listen", "convo", "dialog", "done"].includes(st.t));
   S.steps.splice(at, 0, { t: "recall", id, retry: true });
 }
 
@@ -353,12 +407,13 @@ function header(right) {
 function render() {
   app.replaceChildren();
   document.querySelector(".toast")?.remove();
+  document.body.classList.toggle("in-session", !!S);
   if (!S) { renderHome(); window.scrollTo({ top: 0 }); return; }
   const st = S.steps[S.i];
   const done = st.t === "done";
   app.append(header(done ? null : h("div", { class: "row" }, h("span", { class: "chip" }, "⏱ " + minutes() + " de " + TARGET_MIN + " min"), h("button", { class: "btn btn-ghost btn-small", onclick: () => { stopAudio(); S = null; render(); } }, "Salir"))));
   if (!done) app.append(h("div", { class: "bar", role: "progressbar", "aria-valuemin": 0, "aria-valuemax": S.steps.length - 1, "aria-valuenow": S.i }, h("i", { style: "width:" + Math.round(100 * S.i / (S.steps.length - 1)) + "%" })));
-  ({ intro: renderIntro, recall: renderRecall, listen: renderListen, convo: renderConvo, story: renderStory, done: renderDone })[st.t](st);
+  ({ intro: renderIntro, recall: renderRecall, listen: renderListen, convo: renderConvo, dialog: renderDialog, done: renderDone })[st.t](st);
   window.scrollTo({ top: 0 });
 }
 
@@ -375,7 +430,7 @@ function renderHome() {
   const title = due || nNew ? "Hoy: " + [due ? due + " repaso" + (due > 1 ? "s" : "") : "", nNew ? nNew + " frase" + (nNew > 1 ? "s" : "") + " nueva" + (nNew > 1 ? "s" : "") : ""].filter(Boolean).join(" y ") : "Por hoy estás al día";
   app.append(h("section", { class: "panel" },
     h("div", {}, h("p", { class: "label" }, "Nivel " + LESSONS[curLesson].level + " · Lección " + (curLesson + 1) + " de " + LESSONS.length + " · " + LESSONS[curLesson].title), h("h1", {}, title)),
-    h("p", { class: "muted" }, "Práctica de 20 minutos: repaso, frases nuevas, oído, conversación y mini historia. Cada lección sube un poco la dificultad."),
+    h("p", { class: "muted" }, "Práctica de 20 minutos: repaso, frases nuevas, oído y conversación. Cada lección sube un poco la dificultad."),
     h("div", { class: "stats" },
       h("div", { class: "stat" }, h("b", {}, P.streak || 0), h("span", {}, "días seguidos")),
       h("div", { class: "stat" }, h("b", {}, learned + "/" + ITEMS.length), h("span", {}, "frases firmes")),
@@ -395,6 +450,7 @@ function renderHome() {
         h("small", {}, seen ? firm + "/" + its.length + " firmes" : li > curLesson ? "Nivel " + L.level : "Empieza hoy"));
     }))));
 
+  app.append(h("div", { class: "home-top" }, ...app.querySelectorAll(":scope > section.panel")));
   const mine = ITEMS.filter(i => known(i.id));
   if (mine.length) {
     app.append(h("div", { class: "row", style: "justify-content:space-between" }, h("h2", {}, "Tus frases"), h("span", { class: "note" }, "Toca una para oírla")));
@@ -411,7 +467,7 @@ function renderHome() {
       h("li", {}, h("b", {}, "Conversaciones. "), "Te hablan y respondes con la voz: así se practica sin pensar en español."),
       h("li", {}, h("b", {}, "Gesto + voz. "), "Moverte al decirla ayuda a recordarla por meses."),
       h("li", {}, h("b", {}, "Repaso justo antes de olvidar. "), "Lo que te sale bien vuelve en 1, 3, 7, 16 y 35 días; lo que no, vuelve mañana."),
-      h("li", {}, h("b", {}, "La misma historia, más rápido. "), "Contarla 3 veces con menos tiempo reduce las pausas al hablar."))));
+      h("li", {}, h("b", {}, "Una conversación al final. "), "Respondes varios turnos seguidos, como en una charla de verdad."))));
 
   const nameIn = h("input", { id: "name", value: P.name, maxlength: 24, autocomplete: "given-name" });
   const rateSel = h("select", { id: "rate" }, [["0.85", "Más lenta"], ["1", "Normal"]].map(([v, l]) => h("option", { value: v, selected: String(P.rate) === v }, l)));
@@ -454,9 +510,10 @@ function renderIntro(st) {
   let tries = 0;
   const nextBtn = h("button", { class: "btn btn-main", onclick: next }, "Siguiente", icon("arrow"));
   if (SR && !micDenied) nextBtn.hidden = true;
-  app.append(h("section", { class: "stage" },
+  app.append(h("section", { class: "stage split" },
     h("div", { class: "kind" }, h("span", { class: "label" }, "Frase nueva"), h("span", { class: "chip" }, "Escucha · haz el gesto · dila")),
     h("div", { class: "big-pic", "aria-hidden": "true" }, it.pic),
+    h("div", { class: "side" },
     mainWords,
     levelOf(it.id) >= 3 ? peekEs(fill(it.sound), "Cómo suena") : h("p", { class: "sound" }, "Suena parecido a: ", h("b", {}, fill(it.sound))),
     gestureBox(it),
@@ -477,7 +534,7 @@ function renderIntro(st) {
       }) : null),
     result,
     peekEs(fill(it.es), "¿Qué significa?"),
-    nextBtn));
+    nextBtn)));
   play(it.id);
 }
 
@@ -520,10 +577,10 @@ function renderRecall(st) {
     h("p", { class: "cue" }, h("b", {}, "¿Cómo se dice?"), " Dila en voz alta con el gesto, antes de escucharla. Si no te acuerdas, intenta igual."),
     SR && !micDenied ? micButton("Toca y dila", (alts, err) => { if (!err) showResult(alts); }) : null,
     h("button", { class: "btn btn-ghost", onclick: () => showResult(null) }, SR ? "La dije sin micrófono, ¿cómo era?" : "Ya la dije, ¿cómo era?"));
-  app.append(h("section", { class: "stage" },
+  app.append(h("section", { class: "stage split" },
     h("div", { class: "kind" }, h("span", { class: "label" }, st.retry ? "Otra vez" : st.fresh ? "¿Te acuerdas?" : "Repaso"), h("span", { class: "chip" }, "Tú primero, después el audio")),
     h("div", { class: "big-pic", "aria-hidden": "true" }, it.pic),
-    gestureBox(it), ask, reveal, peekEs(fill(it.es), "Pista en español")));
+    h("div", { class: "side" }, gestureBox(it), ask, reveal, peekEs(fill(it.es), "Pista en español"))));
 }
 
 function renderListen(st) {
@@ -576,63 +633,71 @@ function renderConvo(st) {
     }
     nextBtn.hidden = false;
   }
-  app.append(h("section", { class: "stage" },
+  app.append(h("section", { class: "stage split" },
     h("div", { class: "kind" }, h("span", { class: "label" }, "Conversación"), h("span", { class: "chip" }, "Responde con tu voz")),
     h("div", { class: "bubble" }, h("span", { class: "who" }, "Ella te dice"), h("div", { style: "font-size:56px;line-height:1" }, "💬"), said,
       h("div", { class: "row center" },
         h("button", { class: "btn btn-ghost btn-small", onclick: () => play(c.id) }, icon("play"), "Escuchar otra vez"),
         h("button", { class: "btn btn-ghost btn-small", onclick: () => play(c.id, { slow: true }) }, icon("slow"), "Lento"),
         h("button", { class: "btn btn-ghost btn-small", onclick: e => { said.hidden = !said.hidden; e.currentTarget.textContent = said.hidden ? "Ver lo que dijo" : "Ocultar"; } }, "Ver lo que dijo"))),
+    h("div", { class: "side" },
     h("p", { class: "cue" }, "Respóndele en inglés con una frase que ya sabes."),
     h("div", { class: "row center" },
       SR && !micDenied ? micButton("Responder", (alts, err) => { if (!err) judge(alts); }) : null,
       h("button", { class: "btn btn-ghost", onclick: () => { result.replaceChildren(); showModel("Una respuesta posible:"); nextBtn.hidden = false; } }, "Ver una respuesta")),
-    result, nextBtn));
+    result, nextBtn)));
   play(c.id);
 }
 
-function renderStory(st) {
-  const lines = st.story.lines.map(id => BY_ID[id]);
-  if (st.round === 0) {
-    const list = h("div", { class: "story" }, lines.map(it => h("div", { class: "line" }, h("span", { class: "pic", "aria-hidden": "true" }, it.pic), h("span", { class: "en" }, fill(it.en)))));
-    let busy = false;
-    async function playAll() {
-      if (busy) return; busy = true;
-      const els = list.querySelectorAll(".line");
-      for (let k = 0; k < lines.length; k++) { if (!app.contains(list)) break; els.forEach((e, j) => e.classList.toggle("now", j === k)); await play(lines[k].id); await wait(450); }
-      els.forEach(e => e.classList.remove("now")); busy = false;
-    }
-    app.append(h("section", { class: "stage" },
-      h("div", { class: "kind" }, h("span", { class: "label" }, "Mini historia · ronda 1 de 4"), h("span", { class: "chip" }, "Sombra")),
-      h("h2", {}, "Habla encima del audio"),
-      h("p", { class: "cue muted" }, "Dale a escuchar y di cada frase casi al mismo tiempo que la voz, como una sombra. Repítelo las veces que quieras."),
-      list,
-      h("div", { class: "row center" }, h("button", { class: "btn btn-sun", onclick: playAll }, icon("play"), "Escuchar la historia")),
-      h("button", { class: "btn btn-main", onclick: next }, "Listo, ahora sin texto", icon("arrow"))));
-    return;
+function renderDialog(st) {
+  const turns = st.turns;
+  let k = 0;
+  const log = h("div", { class: "chat", "aria-live": "polite" });
+  const controls = h("div", { class: "side" });
+  const counter = h("span", { class: "chip" });
+  function turn() {
+    const c = turns[k], answers = c.answers.filter(a => st.pool.includes(a));
+    counter.textContent = "Turno " + (k + 1) + " de " + turns.length;
+    const said = h("span", { class: "said", hidden: true }, c.en);
+    const her = h("div", { class: "msg her" },
+      h("button", { class: "btn btn-ghost btn-small", "aria-label": "Escuchar otra vez", onclick: () => play(c.id) }, icon("play")),
+      h("span", { class: "pic", "aria-hidden": "true" }, "💬"), said);
+    log.append(her);
+    log.scrollTop = log.scrollHeight;
+    controls.replaceChildren(
+      h("p", { class: "cue" }, "Respóndele en inglés con una frase que ya sabes."),
+      h("div", { class: "row center" },
+        SR && !micDenied ? micButton("Responder", (alts, err) => { if (!err) answer(answers, alts, said); }) : null,
+        h("button", { class: "btn btn-ghost", onclick: () => answer(answers, null, said) }, "Ver una respuesta")),
+      h("div", { class: "row center" },
+        h("button", { class: "btn btn-ghost btn-small", onclick: () => play(c.id, { slow: true }) }, icon("slow"), "Lento"),
+        h("button", { class: "btn btn-ghost btn-small", onclick: e => { said.hidden = false; e.currentTarget.remove(); } }, "Ver lo que dijo")));
+    play(c.id);
   }
-  const secs = st.secs;
-  const list = h("div", { class: "story pics-only" }, lines.map(it => h("div", { class: "line" }, h("span", { class: "pic", "aria-hidden": "true" }, it.pic))));
-  const bar = h("i", {});
-  const left = h("div", { class: "secs" }, secs + " s");
-  let raf = 0;
-  const doneBtn = h("button", { class: "btn btn-main", hidden: true, onclick: () => { cancelAnimationFrame(raf); next(); } }, "Terminé", icon("arrow"));
-  const go = h("button", { class: "btn btn-sun", onclick: () => {
-    go.hidden = true; doneBtn.hidden = false; const t0 = performance.now();
-    const tick = now => {
-      const r = Math.max(0, 1 - (now - t0) / 1000 / secs);
-      bar.style.transform = "scaleX(" + r + ")"; left.textContent = r > 0 ? Math.ceil(secs * r) + " s" : "¡Tiempo!";
-      if (r > 0 && app.contains(bar)) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-  } }, "Empezar (" + secs + " s)");
-  const tips = ["Cuéntala en voz alta mirando solo las imágenes. Si te trabas, sigue con la siguiente.", "Ahora con menos tiempo. Las mismas frases, más fluido.", "Última vuelta, rápido. No importa si sale perfecta: importa no detenerte."];
+  function answer(answers, alts, said) {
+    said.hidden = false;
+    let best = { ratio: 0 }, bestId = answers[0];
+    if (alts) for (const id of answers) { const s = bestScore(fill(BY_ID[id].en), alts, id); if (s.ratio > best.ratio) { best = s; bestId = id; } }
+    const ok = !!alts && !!best.marks && gradeOf(best) !== "bad";
+    const a = BY_ID[bestId];
+    log.append(h("div", { class: "msg me" }, h("span", { class: "pic", "aria-hidden": "true" }, a.pic), ok ? wordsView(best.marks) : h("span", { class: "en" }, fill(a.en))));
+    log.scrollTop = log.scrollHeight;
+    if (ok && P.items[bestId]) { P.items[bestId].seen = (P.items[bestId].seen || 0) + 1; save(); }
+    const last = k === turns.length - 1;
+    controls.replaceChildren(
+      h("p", { class: "verdict " + (ok ? "ok" : alts && alts.length ? "mid" : "no") },
+        ok ? "¡Bien respondido!" : !alts ? "Así puedes responder:" : alts.length ? "Casi. Así puedes responder:" : "No te escuché. Así puedes responder:"),
+      !ok && alts && alts[0] ? h("p", { class: "heard" }, "Te entendí: “" + alts[0] + "”") : null,
+      h("div", { class: "row center" },
+        ok ? null : h("button", { class: "btn btn-ghost", onclick: () => play(a.id) }, icon("play"), "Escuchar la respuesta"),
+        h("button", { class: "btn btn-main", onclick: () => { if (last) next(); else { k++; turn(); } } }, last ? "Terminar" : "Seguir", icon("arrow"))));
+    if (!ok) setTimeout(() => play(a.id), 300);
+  }
   app.append(h("section", { class: "stage" },
-    h("div", { class: "kind" }, h("span", { class: "label" }, "Mini historia · ronda " + (st.round + 1) + " de 4"), h("span", { class: "chip" }, "Solo imágenes")),
-    h("h2", {}, st.round === 1 ? "Ahora tú, sin texto" : st.round === 2 ? "Otra vez, más rápido" : "Última, todavía más rápido"),
-    h("p", { class: "cue muted" }, tips[st.round - 1]),
-    list, h("div", { class: "timer", "aria-hidden": "true" }, bar), left,
-    h("div", { class: "row center" }, go, doneBtn)));
+    h("div", { class: "kind" }, h("span", { class: "label" }, "Conversación final"), counter),
+    h("h2", {}, "Una conversación corta"),
+    log, controls));
+  turn();
 }
 
 function renderDone() {
