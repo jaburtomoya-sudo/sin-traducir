@@ -14,21 +14,21 @@
 <style>
 /* Layout: una "escena" centrada por paso (imagen primero, después la acción), pensada para tablet en vertical u horizontal. */
 :root {
-  --paper: #edf2ef; --card: #ffffff; --ink: #1b2a2f; --muted: #5b6b6f; --line: #d3ddd9;
+  --paper: #edf2ef; --card: #ffffff; --ink: #1b2a2f; --muted: #44545a; --line: #b9c7c2;
   --teal: #0e6b63; --teal-soft: #d6ebe7; --sun: #f2a900; --sun-ink: #3a2a00;
-  --good: #1f7a3d; --warn: #a86400; --bad: #b23a2e;
+  --good: #1f7a3d; --warn: #a86400; --bad: #b23a2e; --oops: #9a5b00; --oops-soft: #fdf0d5;
   --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
   --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --r: 18px; color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --paper: #0f1719; --card: #172327; --ink: #e5eeeb; --muted: #9fb1ad; --line: #2a3a3e;
+  :root { --paper: #0f1719; --card: #172327; --ink: #e5eeeb; --muted: #b8c7c3; --line: #3a4d52;
     --teal: #4fc2b4; --teal-soft: #173a37; --sun: #f5b82e; --sun-ink: #2a1e00;
-    --good: #5cc781; --warn: #e3a23c; --bad: #ef7d70; color-scheme: dark; }
+    --good: #5cc781; --warn: #e3a23c; --bad: #ef7d70; --oops: #f0b44c; --oops-soft: #3a2c12; color-scheme: dark; }
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; }
-body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 1.5;
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 20px; line-height: 1.5;
   padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 [hidden] { display: none !important; }
 .wrap { max-width: 900px; margin: 0 auto;
@@ -37,22 +37,22 @@ body { background: var(--paper); color: var(--ink); font-family: var(--body); fo
 header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .brand { font-family: var(--display); font-weight: 800; font-size: 26px; letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 8px; }
 .brand s { text-decoration-color: var(--sun); text-decoration-thickness: 4px; color: var(--muted); font-weight: 700; }
-.chip { font-size: 14px; color: var(--muted); background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+.chip { font-size: 16px; color: var(--muted); background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
 h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; text-wrap: balance; margin: 0; line-height: 1.15; }
 h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; }
 h2 { font-size: clamp(22px, 3vw, 28px); font-weight: 700; }
-h3 { font-size: 20px; font-weight: 700; }
+h3 { font-size: 22px; font-weight: 700; }
 p { margin: 0; }
 .muted { color: var(--muted); }
-.label { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+.label { font-size: 16px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
 button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; -webkit-tap-highlight-color: transparent; }
 button:focus-visible { outline: 3px solid var(--sun); outline-offset: 3px; }
 button:disabled { cursor: default; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 60px; padding: 0 26px; border-radius: 999px; font-weight: 700; font-size: 19px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 60px; padding: 0 26px; border-radius: 999px; font-weight: 700; font-size: 21px; }
 .btn-main { background: var(--teal); color: var(--card); }
 .btn-sun { background: var(--sun); color: var(--sun-ink); }
 .btn-ghost { background: var(--card); border: 2px solid var(--line); }
-.btn-small { min-height: 46px; padding: 0 16px; font-size: 16px; }
+.btn-small { min-height: 46px; padding: 0 16px; font-size: 18px; }
 .btn svg { width: 24px; height: 24px; flex: none; }
 .btn.listening { background: var(--bad); color: #fff; animation: pulse 1.1s ease-in-out infinite; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 12px color-mix(in srgb, var(--bad) 25%, transparent); } }
@@ -62,20 +62,25 @@ button:disabled { cursor: default; }
 .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .stat { background: var(--paper); border-radius: 14px; padding: 14px; }
 .stat b { display: block; font-family: var(--display); font-size: 32px; font-variant-numeric: tabular-nums; line-height: 1.1; }
-.stat span { font-size: 14px; color: var(--muted); }
+.stat span { display: block; font-size: 16px; line-height: 1.3; color: var(--muted); }
+.pct { font-family: var(--display); font-size: 23px; line-height: 1; color: var(--teal); font-variant-numeric: tabular-nums; }
+.week { display: flex; gap: 4px; margin: 6px 0 4px; }
+.week i { flex: 1; height: 10px; border-radius: 5px; background: var(--line); }
+.week i.on { background: var(--good); }
+.week i.today { outline: 2px solid var(--teal); outline-offset: 1px; }
 .lessons { display: grid; gap: 10px; }
 .lesson { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; background: var(--paper); border-radius: 14px; padding: 12px 14px; }
-.lesson .num { font-family: var(--display); font-weight: 800; font-size: 22px; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--card); border: 2px solid var(--line); }
+.lesson .num { font-family: var(--display); font-weight: 800; font-size: 23px; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--card); border: 2px solid var(--line); }
 .lesson.now .num { background: var(--sun); color: var(--sun-ink); border-color: var(--sun); }
-.lesson.locked { opacity: 0.55; }
+.lesson.locked { opacity: 0.75; }
 button.lesson { width: 100%; text-align: left; border: 2px solid transparent; }
 button.lesson:hover { border-color: var(--line); }
 .lesson-end { display: grid; justify-items: end; gap: 2px; }
-.lesson .go { display: inline-flex; align-items: center; gap: 4px; color: var(--teal); font-weight: 700; font-size: 15px; }
+.lesson .go { display: inline-flex; align-items: center; gap: 4px; color: var(--teal); font-weight: 700; font-size: 17px; }
 .lesson .go svg { width: 18px; height: 18px; }
 .meter { height: 8px; background: var(--card); border-radius: 999px; overflow: hidden; margin-top: 6px; border: 1px solid var(--line); }
 .meter i { display: block; height: 100%; background: var(--teal); }
-.lesson small { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.lesson small { color: var(--muted); font-size: 16px; font-variant-numeric: tabular-nums; }
 .phrases { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
 .phrase { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; text-align: left; display: grid; gap: 4px; min-width: 0; }
 .phrase .pic { font-size: 38px; line-height: 1; }
@@ -84,52 +89,52 @@ button.lesson:hover { border-color: var(--line); }
 .lvl i { width: 14px; height: 5px; border-radius: 3px; background: var(--line); }
 .lvl i.on { background: var(--teal); }
 details.box { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 20px; }
-details.box summary { cursor: pointer; font-weight: 700; font-family: var(--display); font-size: 19px; }
+details.box summary { cursor: pointer; font-weight: 700; font-family: var(--display); font-size: 21px; }
 details.box ul { margin: 12px 0 0; padding-left: 20px; display: grid; gap: 8px; }
 .settings { display: grid; gap: 14px; margin-top: 12px; }
 .field { display: grid; gap: 6px; }
 .field input, .field select { font: inherit; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); min-height: 52px; }
-.note { font-size: 15px; color: var(--muted); }
+.note { font-size: 17px; color: var(--muted); }
 .accent-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .accent-pick .btn { padding: 0 12px; }
 .accent-pick .btn.on { border-color: var(--teal); background: var(--teal-soft); box-shadow: inset 0 0 0 1px var(--teal); }
-.alert { background: var(--teal-soft); border-radius: 14px; padding: 14px 16px; font-size: 16px; }
+.alert { background: var(--teal-soft); border-radius: 14px; padding: 14px 16px; font-size: 18px; }
 .bar { height: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
 .bar > i { display: block; height: 100%; background: var(--teal); border-radius: 999px; transition: width .3s; }
 .stage { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: clamp(20px, 4vw, 40px); display: grid; gap: 20px; justify-items: center; text-align: center; }
 .stage .kind { justify-self: stretch; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
 .big-pic { font-size: clamp(100px, 20vw, 180px); line-height: 1; user-select: none; }
-.cue { font-size: 19px; max-width: 36ch; }
-.gesture { background: var(--teal-soft); border-radius: 14px; padding: 12px 18px; font-size: 17px; display: flex; gap: 10px; align-items: center; text-align: left; max-width: 46ch; }
+.cue { font-size: 21px; max-width: 36ch; }
+.gesture { background: var(--teal-soft); border-radius: 14px; padding: 12px 18px; font-size: 19px; display: flex; gap: 10px; align-items: center; text-align: left; max-width: 46ch; }
 .gesture svg { width: 26px; height: 26px; flex: none; color: var(--teal); }
 .answer { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 6vw, 52px); letter-spacing: -0.02em; line-height: 1.15; overflow-wrap: anywhere; display: flex; flex-wrap: wrap; gap: 0 .28em; justify-content: center; }
 .answer .w.ok { color: var(--good); }
-.answer .w.no { color: var(--bad); text-decoration: underline wavy; text-underline-offset: 6px; text-decoration-thickness: 2px; }
-.heard { font-size: 16px; color: var(--muted); }
-.verdict { font-weight: 700; font-size: 20px; }
-.verdict.ok { color: var(--good); } .verdict.mid { color: var(--warn); } .verdict.no { color: var(--bad); }
-.sound { font-size: 17px; color: var(--muted); }
+.answer .w.no { color: var(--oops); text-decoration: underline wavy; text-underline-offset: 6px; text-decoration-thickness: 2px; }
+.heard { font-size: 18px; color: var(--muted); }
+.verdict { font-weight: 700; font-size: 22px; }
+.verdict.ok { color: var(--good); } .verdict.mid { color: var(--teal); } .verdict.no { color: var(--oops); }
+.sound { font-size: 19px; color: var(--muted); }
 .peek { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center; }
-.reveal { font-size: 16px; color: var(--muted); }
+.reveal { font-size: 18px; color: var(--muted); }
 .rate { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 640px; }
-.rate button { min-height: 72px; border-radius: 16px; font-weight: 700; font-size: 17px; border: 2px solid var(--line); background: var(--paper); padding: 8px; }
-.rate .r-bad { border-color: var(--bad); color: var(--bad); }
-.rate .r-mid { border-color: var(--warn); color: var(--warn); }
+.rate button { min-height: 72px; border-radius: 16px; font-weight: 700; font-size: 19px; border: 2px solid var(--line); background: var(--paper); padding: 8px; }
+.rate .r-bad { border-color: var(--oops); color: var(--oops); }
+.rate .r-mid { border-color: var(--teal); color: var(--teal); }
 .rate .r-good { border-color: var(--good); color: var(--good); }
 .rate .suggest { box-shadow: 0 0 0 4px var(--sun); }
 .choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 560px; }
 .choice { background: var(--paper); border: 3px solid var(--line); border-radius: 18px; font-size: clamp(54px, 12vw, 88px); line-height: 1; padding: 18px 8px; }
 .choice.ok { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, var(--card)); }
-.choice.no { border-color: var(--bad); opacity: 0.6; }
+.choice.no { border-color: var(--oops); background: var(--oops-soft); opacity: 0.7; }
 .line { display: flex; align-items: center; gap: 14px; background: var(--paper); border-radius: 14px; padding: 10px 14px; text-align: left; border: 2px solid transparent; }
 .line .pic { font-size: 40px; line-height: 1; flex: none; }
-.line .en { font-weight: 700; font-size: 20px; min-width: 0; overflow-wrap: anywhere; }
-.bubble { background: var(--teal-soft); border-radius: 22px 22px 22px 6px; padding: 18px 22px; font-size: 20px; max-width: 32ch; display: grid; gap: 8px; justify-items: center; }
-.bubble .who { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
-.feedback { font-weight: 700; font-size: 20px; min-height: 30px; }
-.feedback.ok { color: var(--good); } .feedback.no { color: var(--bad); }
-.toast { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); max-width: 640px; margin: 0 auto; background: var(--card); border: 2px solid var(--sun); border-radius: 18px; padding: 16px 18px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.18); display: grid; gap: 10px; z-index: 20; font-size: 16px; }
-.saved { font-size: 13px; color: var(--muted); text-align: center; }
+.line .en { font-weight: 700; font-size: 22px; min-width: 0; overflow-wrap: anywhere; }
+.bubble { background: var(--teal-soft); border-radius: 22px 22px 22px 6px; padding: 18px 22px; font-size: 22px; max-width: 32ch; display: grid; gap: 8px; justify-items: center; }
+.bubble .who { font-size: 16px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+.feedback { font-weight: 700; font-size: 22px; min-height: 30px; }
+.feedback.ok { color: var(--good); } .feedback.no { color: var(--oops); }
+.toast { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); max-width: 640px; margin: 0 auto; background: var(--card); border: 2px solid var(--sun); border-radius: 18px; padding: 16px 18px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.18); display: grid; gap: 10px; z-index: 20; font-size: 18px; }
+.saved { font-size: 16px; color: var(--muted); text-align: center; }
 
 /* ---------- Pantalla completa en celular, tablet y PC ---------- */
 .wrap { max-width: 1200px; }
@@ -150,18 +155,18 @@ body.in-session .stage > :last-child { margin-bottom: auto; }
 header.top { flex-wrap: nowrap; }
 header.top > .row { flex-wrap: nowrap; }
 @media (max-width: 520px) {
-  body { font-size: 17px; }
+  body { font-size: 19px; }
   .wrap { gap: 14px; }
-  .brand { font-size: 22px; }
+  .brand { font-size: 23px; }
   header.top .chip { padding: 4px 10px; white-space: nowrap; }
-  .btn { min-height: 54px; padding: 0 18px; font-size: 18px; }
+  .btn { min-height: 54px; padding: 0 18px; font-size: 20px; }
   .stage { border-radius: 20px; }
   .stage .kind .chip { display: none; }
   .stage .row.center { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 10px; }
   .stage .row.center > .btn-sun:only-child, .stage .row.center > .btn-sun:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .stage .row.center > .btn { padding: 0 12px; }
   .side > .btn-main, .stage > .btn-main { width: 100%; }
-  .gesture { font-size: 16px; padding: 10px 14px; }
+  .gesture { font-size: 18px; padding: 10px 14px; }
   .panel { padding: 18px; }
 }
 .chat { display: grid; gap: 10px; width: 100%; max-width: 680px; max-height: 38vh; overflow-y: auto; padding: 4px; }
@@ -169,16 +174,16 @@ header.top > .row { flex-wrap: nowrap; }
 .msg.her { background: var(--teal-soft); justify-self: start; border-bottom-left-radius: 6px; }
 .msg.me { background: var(--paper); border: 2px solid var(--line); justify-self: end; border-bottom-right-radius: 6px; }
 .msg .pic { font-size: 32px; line-height: 1; flex: none; }
-.msg .said, .msg .en { font-weight: 700; font-size: 19px; overflow-wrap: anywhere; }
-.msg .answer { font-size: 22px; justify-content: flex-start; }
+.msg .said, .msg .en { font-weight: 700; font-size: 21px; overflow-wrap: anywhere; }
+.msg .answer { font-size: 23px; justify-content: flex-start; }
 .msg .btn-small { min-height: 44px; padding: 0 12px; flex: none; }
 /* Pantallas grandes (tablet, PC): letra y botones un poco más grandes. */
 @media (min-width: 760px) and (min-height: 700px) {
-  body { font-size: 20px; }
-  .btn { min-height: 64px; font-size: 20px; }
-  .btn-small { min-height: 50px; font-size: 17px; }
-  .cue, .gesture { font-size: 20px; }
-  .msg .said, .msg .en { font-size: 21px; }
+  body { font-size: 22px; }
+  .btn { min-height: 64px; font-size: 22px; }
+  .btn-small { min-height: 50px; font-size: 19px; }
+  .cue, .gesture { font-size: 22px; }
+  .msg .said, .msg .en { font-size: 22px; }
 }
 /* Pantalla ancha y baja (tablet acostada, PC): imagen a la izquierda, acciones a la derecha. */
 @media (min-width: 760px) and (min-aspect-ratio: 5/4) {
@@ -190,7 +195,7 @@ header.top > .row { flex-wrap: nowrap; }
   .stage.split > .side { grid-column: 2; }
   .stage.split > .big-pic { font-size: clamp(120px, min(22vw, 38vh), 260px); }
 }
-@media (max-width: 520px) { .rate button { font-size: 15px; min-height: 64px; } .stat b { font-size: 26px; } }
+@media (max-width: 520px) { .rate button { font-size: 17px; min-height: 64px; } .stat b { font-size: 26px; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
@@ -211,13 +216,15 @@ const levelOf = id => (LESSONS[BY_ID[id].lesson] || {}).level || 1;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 /* ---------- Estado y guardado ---------- */
-const DEFAULT = { v: 2, name: "Jonathan", rate: 1, accent: "gb", items: {}, streak: 0, lastDay: null, sessions: 0 };
+const DEFAULT = { v: 2, name: "Jonathan", rate: 1, accent: "gb", items: {}, streak: 0, lastDay: null, sessions: 0, days: [], weekGoal: 4, speakSec: 0 };
 let P = structuredClone(DEFAULT);
 function load() {
   try {
     const s = localStorage.getItem("sin-traducir-v2") || localStorage.getItem("sin-traducir");
     if (s) { const d = JSON.parse(s); P = { ...structuredClone(DEFAULT), ...d, items: { ...(d.items || {}) } }; }
   } catch {}
+  if (!Array.isArray(P.days)) P.days = [];
+  if (P.lastDay != null && !P.days.includes(P.lastDay)) P.days.push(P.lastDay);
 }
 function save() { try { localStorage.setItem("sin-traducir-v2", JSON.stringify(P)); } catch {} }
 try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch {}
@@ -226,6 +233,19 @@ const app = document.getElementById("app");
 const dayNum = (d = new Date()) => Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 86400000);
 const fill = s => s.replace(/\{name\}/g, P.name || "Jonathan");
 const known = id => !!P.items[id];
+/* Meta semanal (lunes a domingo) en vez de racha: faltar un día no borra nada. */
+const weekStart = (d = dayNum()) => d - ((d + 3) % 7);
+const weekDays = () => { const w = weekStart(); return P.days.filter(d => d >= w && d < w + 7).length; };
+const weekGoal = () => P.weekGoal || 4;
+const fmtSpeak = sec => sec < 60 ? Math.round(sec) + " seg" : Math.round(sec / 60) + " min";
+function weekDots() {
+  const w = weekStart(), t = dayNum();
+  return h("div", { class: "week", "aria-hidden": "true" }, [0, 1, 2, 3, 4, 5, 6].map(i => h("i", { class: (P.days.includes(w + i) ? "on" : "") + (w + i === t ? " today" : "") })));
+}
+/* Dominio de una lección en %: cada frase vale hasta 3 aciertos espaciados. Usa lo mejor alcanzado menos un paso,
+   así un mal día no hace caer el porcentaje de golpe. */
+const itemScore = id => { const it = P.items[id]; if (!it) return 0; return Math.min(3, Math.max(it.box || 0, (it.best || it.box || 0) - 1)) / 3; };
+const lessonPct = li => { const its = ITEMS.filter(i => i.lesson === li); return Math.round(100 * its.reduce((a, i) => a + itemScore(i.id), 0) / its.length); };
 const dueIds = () => ITEMS.filter(i => known(i.id) && P.items[i.id].due <= dayNum()).map(i => i.id);
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
@@ -385,6 +405,7 @@ function rate(id, grade) {
   if (grade === "good") { it.box = Math.min((it.box || 0) + 1, INTERVALS.length - 1); it.due = dayNum() + INTERVALS[it.box]; }
   else if (grade === "mid") { it.box = Math.max(it.box || 0, 1); it.due = dayNum() + 1; }
   else { it.box = 0; it.due = dayNum(); }
+  it.best = Math.max(it.best || 0, it.box);
   P.items[id] = it; save();
 }
 
@@ -453,7 +474,7 @@ function addExtra() {
 function header(right) {
   return h("header", { class: "top" }, h("div", { class: "brand" }, h("span", {}, "Sin"), h("s", {}, "Traducir")),
     right || h("div", { class: "row", style: "flex-wrap:nowrap;gap:8px" },
-      P.streak ? h("span", { class: "chip" }, "Racha: " + P.streak + (P.streak === 1 ? " día" : " días")) : null,
+      h("span", { class: "chip" }, "Semana: " + Math.min(weekDays(), weekGoal()) + "/" + weekGoal() + (weekDays() >= weekGoal() ? " ✓" : "")),
       h("button", { class: "chip", title: "Cambiar acento", onclick: () => { const d = document.querySelector("details.settings-box"); if (d) { d.open = true; d.scrollIntoView({ behavior: "smooth", block: "start" }); } } }, ACCENTS[accent()].flag + " " + ACCENTS[accent()].short)));
 }
 function render() {
@@ -477,6 +498,7 @@ function renderHome() {
   const left = ITEMS.filter(i => !known(i.id)).length;
   const nNew = Math.min(left, due > 8 ? 2 : NEW_PER_SESSION);
   const learned = ITEMS.filter(i => known(i.id) && P.items[i.id].box >= 2).length;
+  const learning = ITEMS.filter(i => known(i.id) && P.items[i.id].box < 2).length;
   const curLesson = (ITEMS.find(i => !known(i.id)) || ITEMS[ITEMS.length - 1]).lesson;
   app.append(header());
   const title = due || nNew ? "Hoy: " + [due ? due + " repaso" + (due > 1 ? "s" : "") : "", nNew ? nNew + " frase" + (nNew > 1 ? "s" : "") + " nueva" + (nNew > 1 ? "s" : "") : ""].filter(Boolean).join(" y ") : "Por hoy estás al día";
@@ -484,9 +506,10 @@ function renderHome() {
     h("div", {}, h("p", { class: "label" }, "Nivel " + LESSONS[curLesson].level + " · Lección " + (curLesson + 1) + " de " + LESSONS.length + " · " + LESSONS[curLesson].title), h("h1", {}, title)),
     h("p", { class: "muted" }, "Práctica de 20 minutos: repaso, frases nuevas, oído y conversación. Cada lección sube un poco la dificultad."),
     h("div", { class: "stats" },
-      h("div", { class: "stat" }, h("b", {}, P.streak || 0), h("span", {}, "días seguidos")),
-      h("div", { class: "stat" }, h("b", {}, learned + "/" + ITEMS.length), h("span", {}, "frases firmes")),
-      h("div", { class: "stat" }, h("b", {}, P.sessions || 0), h("span", {}, "sesiones"))),
+      h("div", { class: "stat" }, h("b", {}, weekDays() + "/" + weekGoal()), weekDots(), h("span", {}, weekDays() >= weekGoal() ? "¡Meta de la semana cumplida!" : "días esta semana")),
+      h("div", { class: "stat" }, h("b", {}, learned), h("span", {}, "frases firmes"), learning ? h("span", {}, "+" + learning + " en práctica") : null),
+      h("div", { class: "stat" }, h("b", {}, fmtSpeak(P.speakSec || 0)), h("span", {}, "hablando inglés"))),
+    h("p", { class: "note" }, "Tu meta es practicar " + weekGoal() + " días por semana. Si un día no puedes, no pasa nada: no pierdes lo que llevas."),
     h("div", { class: "row" },
       h("button", { class: "btn btn-main", onclick: () => { S = buildSession(); render(); } }, due || nNew ? "Empezar la sesión de hoy" : "Practicar de nuevo", icon("arrow")),
       h("button", { class: "btn btn-ghost", onclick: () => play("test") }, icon("play"), "Probar sonido")),
@@ -496,12 +519,12 @@ function renderHome() {
   app.append(h("section", { class: "panel" }, h("div", {}, h("h2", {}, "Lecciones"), h("p", { class: "note" }, "Toca una lección que ya empezaste para practicarla otra vez.")),
     h("div", { class: "lessons" }, LESSONS.map((L, li) => {
       const its = ITEMS.filter(i => i.lesson === li), seen = its.filter(i => known(i.id)).length, firm = its.filter(i => known(i.id) && P.items[i.id].box >= 2).length;
-      const open = li <= curLesson && seen > 0;
+      const open = li <= curLesson && seen > 0, pct = lessonPct(li);
       return h(open ? "button" : "div", { class: "lesson" + (li === curLesson ? " now" : "") + (li > curLesson ? " locked" : "") + (open ? " open" : ""),
           onclick: open ? () => { S = buildLessonSession(li); render(); } : null, "aria-label": open ? "Practicar la lección " + (li + 1) + ": " + L.title : null },
         h("span", { class: "num" }, li + 1),
-        h("div", {}, h("h3", {}, L.title), h("div", { class: "meter", "aria-hidden": "true" }, h("i", { style: "width:" + Math.round(100 * firm / its.length) + "%" }))),
-        h("span", { class: "lesson-end" }, h("small", {}, seen ? firm + "/" + its.length + " firmes" : li > curLesson ? "Nivel " + L.level : "Empieza hoy"),
+        h("div", {}, h("h3", {}, L.title), h("div", { class: "meter", "aria-hidden": "true" }, h("i", { style: "width:" + pct + "%" }))),
+        h("span", { class: "lesson-end" }, seen ? h("b", { class: "pct" }, pct + "%") : null, h("small", {}, seen ? (pct >= 100 ? "¡Dominada!" : "dominada") : li > curLesson ? "Nivel " + L.level : "Empieza hoy"),
           open ? h("span", { class: "go" }, "Practicar", icon("arrow")) : null));
     }))));
 
@@ -528,6 +551,8 @@ function renderHome() {
   const rateSel = h("select", { id: "rate" }, [["0.85", "Más lenta"], ["1", "Normal"]].map(([v, l]) => h("option", { value: v, selected: String(P.rate) === v }, l)));
   nameIn.addEventListener("change", () => { P.name = nameIn.value.trim() || "Jonathan"; save(); render(); });
   rateSel.addEventListener("change", () => { P.rate = Number(rateSel.value); save(); });
+  const goalSel = h("select", { id: "goal" }, [2, 3, 4, 5, 7].map(n => h("option", { value: n, selected: weekGoal() === n }, n + " días por semana")));
+  goalSel.addEventListener("change", () => { P.weekGoal = Number(goalSel.value); save(); render(); const d = document.querySelector("details.settings-box"); if (d) d.open = true; });
   const accentNote = h("p", { class: "note" });
   const setAccentNote = () => { accentNote.textContent = accent() === "us" ? (hasUSVoice() ? "Escucharás la voz de EE.UU. de este aparato y el micrófono te entenderá con acento de EE.UU." : synth ? "Este aparato no tiene voz de EE.UU. instalada: se usan los audios británicos. El micrófono sí te entiende con acento de EE.UU." : "Este navegador no tiene voces: se usan los audios británicos.") : "Voz británica grabada."; };
   setAccentNote();
@@ -541,6 +566,7 @@ function renderHome() {
       h("div", { class: "field" }, h("span", { class: "label" }, "Acento del inglés"), accentRow, accentNote),
       h("label", { class: "field", for: "name" }, h("span", { class: "label" }, "Tu nombre (para “My name is…”)"), nameIn),
       h("label", { class: "field", for: "rate" }, h("span", { class: "label" }, "Velocidad de la voz"), rateSel),
+      h("label", { class: "field", for: "goal" }, h("span", { class: "label" }, "Meta semanal"), goalSel),
       h("div", { class: "row" }, h("button", { class: "btn btn-ghost btn-small", disabled: !SR, onclick: async e => {
         const b = e.currentTarget; b.classList.add("listening"); micOut.textContent = "Escuchando…";
         const r = await listen(); b.classList.remove("listening");
@@ -559,7 +585,9 @@ function peekEs(text, label) {
 function micButton(label, onResult) {
   const b = h("button", { class: "btn btn-sun", onclick: async () => {
     if (b.disabled) return; b.disabled = true; b.classList.add("listening"); b.lastChild.textContent = "Escuchando… habla ahora";
+    const t0 = Date.now();
     const r = await listen();
+    if (!r.error && r.alts && r.alts.length) { P.speakSec = (P.speakSec || 0) + Math.min(15, (Date.now() - t0) / 1000); save(); }
     b.disabled = false; b.classList.remove("listening"); b.lastChild.textContent = label;
     if (r.error && r.error !== "no-speech" && r.error !== "aborted") { micProblem(r.error); onResult(null, r.error); return; }
     onResult(r.alts || [], null);
@@ -593,7 +621,7 @@ function renderIntro(st) {
         nextBtn.textContent = g === "good" ? "Siguiente" : "Seguir igual";
         nextBtn.append(icon("arrow"));
         result.replaceChildren(
-          h("p", { class: "verdict " + (g === "good" ? "ok" : g === "mid" ? "mid" : "no") }, g === "good" ? "¡Perfecto! Se entendió cada palabra." : g === "mid" ? "Casi. Escucha otra vez y repítela: las palabras en rojo no se entendieron." : alts.length ? "Todavía no se entiende. Escucha despacio y prueba otra vez." : "No te escuché. Habla un poco más fuerte."),
+          h("p", { class: "verdict " + (g === "good" ? "ok" : g === "mid" ? "mid" : "no") }, g === "good" ? "¡Perfecto! Se entendió cada palabra." : g === "mid" ? "Casi. Escucha otra vez y repítela: las palabras subrayadas no se entendieron." : alts.length ? "Todavía no se entiende. Escucha despacio y prueba otra vez." : "No te escuché. Habla un poco más fuerte."),
           s.heard ? h("p", { class: "heard" }, "Te entendí: “" + s.heard + "”") : null);
       }) : null),
     result,
@@ -626,7 +654,7 @@ function renderRecall(st) {
       wordsBox.replaceChildren(wordsView(s.marks));
       suggestion = gradeOf(s);
       info.replaceChildren(
-        h("p", { class: "verdict " + (suggestion === "good" ? "ok" : suggestion === "mid" ? "mid" : "no") }, suggestion === "good" ? "¡Se entendió perfecto!" : suggestion === "mid" ? "Casi. Las palabras en rojo no se entendieron: escucha y repítela." : alts.length ? "Todavía no se entiende. Escucha cómo es." : "No te escuché."),
+        h("p", { class: "verdict " + (suggestion === "good" ? "ok" : suggestion === "mid" ? "mid" : "no") }, suggestion === "good" ? "¡Se entendió perfecto!" : suggestion === "mid" ? "Casi. Las palabras subrayadas no se entendieron: escucha y repítela." : alts.length ? "Todavía no se entiende. Escucha cómo es." : "No te escuché."),
         s.heard ? h("p", { class: "heard" }, "Te entendí: “" + s.heard + "”") : null);
     } else { wordsBox.replaceChildren(h("div", { class: "answer" }, target)); info.replaceChildren(); suggestion = null; }
     rateRow.querySelectorAll("button").forEach(b => { b.classList.toggle("suggest", b.dataset.g === suggestion); if (b.dataset.g === "good") b.hidden = !!alts && suggestion !== "good"; });
@@ -777,7 +805,7 @@ function renderDone() {
     return;
   }
   const today = dayNum();
-  if (!S.finalized) { S.finalized = true; if (P.lastDay !== today) { P.streak = P.lastDay === today - 1 ? (P.streak || 0) + 1 : 1; P.lastDay = today; } P.sessions = (P.sessions || 0) + 1; save(); }
+  if (!S.finalized) { S.finalized = true; if (!P.days.includes(today)) { P.days.push(today); P.days = P.days.filter(d => d > today - 60); } P.lastDay = today; P.sessions = (P.sessions || 0) + 1; save(); }
   const tomorrow = ITEMS.filter(i => known(i.id) && P.items[i.id].due <= today + 1).length;
   const practiced = new Set(S.steps.filter(s => s.t === "recall").map(s => s.id)).size;
   app.append(h("section", { class: "stage" },
@@ -786,7 +814,7 @@ function renderDone() {
     h("div", { style: "display:grid;gap:6px" },
       h("p", {}, "Practicaste ", h("b", {}, practiced), " frase" + (practiced === 1 ? "" : "s") + (S.newIds.length ? ", " + S.newIds.length + " nueva" + (S.newIds.length > 1 ? "s" : "") : "") + "."),
       h("p", {}, "Practicaste ", h("b", {}, mins + " minutos"), " hoy."),
-      h("p", {}, "Racha: ", h("b", {}, P.streak + (P.streak === 1 ? " día" : " días")), "."),
+      h("p", {}, "Esta semana: ", h("b", {}, weekDays() + " de " + weekGoal() + " días"), weekDays() >= weekGoal() ? ". ¡Meta cumplida!" : "."),
       h("p", {}, tomorrow ? "Mañana te tocan " + tomorrow + " repaso" + (tomorrow > 1 ? "s" : "") + "." : "Mañana sigues con frases nuevas.")),
     h("p", { class: "muted cue" }, "Durante el día, cuando saludes o te despidas, di la frase en inglés en tu cabeza. Eso entrena pensar sin traducir."),
     h("button", { class: "btn btn-main", onclick: () => { S = null; render(); } }, "Volver al inicio")));
